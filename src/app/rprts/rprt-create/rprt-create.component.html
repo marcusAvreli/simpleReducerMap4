@@ -1,0 +1,49 @@
+<h1>report create</h1>
+
+<form #frmHero="ngForm" id="frmHero" novalidate (ngSubmit)="onSaveHero()" novalidate>
+  <div class="row">
+      <ui-input required [dataErrorRequired]="'validations.required.name' | translate"
+              id="txtName"
+               title="{{'heroes.fields.name' | translate}}"
+              placeholder="{{'heroes.placeholders.name' | translate }}"
+              [mode]="mode"
+              [(ngModel)]="rprt.name"
+              [focus]="true"
+              [ngModelOptions]="{standalone: true}">
+    </ui-input>
+  </div>
+  <div class="row">
+      <ui-input required [dataErrorRequired]="'validations.required.name' | translate"
+              id="txtDisplayName"
+               title="display name"
+              placeholder="display name"
+              [mode]="mode"
+              [(ngModel)]="rprt.displayName"
+              [focus]="true"
+              [ngModelOptions]="{standalone: true}">
+    </ui-input>
+  </div>
+  <div class="row">
+      <ui-input required [dataErrorRequired]="'validations.required.name' | translate"
+              id="txtDescription"
+               title="{{'heroes.fields.name' | translate}}"
+              placeholder="{{'heroes.placeholders.name' | translate }}"
+              [mode]="mode"
+              [(ngModel)]="rprt.description"
+              [focus]="true"
+              [ngModelOptions]="{standalone: true}">
+    </ui-input>
+  </div>
+  
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary" [disabled]="!validate()">save</button>
+    <div class="btn-group">
+      <button class="btn btn-secondary btn-sm" routerLink="/reports">
+        <i class="fa fa-arrow-left"></i> back
+      </button>
+      <button type="button" (click)="reset()" class="btn btn-danger btn-sm">
+        <i class="fa fa-undo"></i>reset
+      </button>
+    </div>
+  </div>
+</form>

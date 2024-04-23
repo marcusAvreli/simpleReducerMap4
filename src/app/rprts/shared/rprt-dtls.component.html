@@ -1,0 +1,24 @@
+
+<!--
+https://www.geeksforgeeks.org/how-to-disable-click-outside-modal-to-close-modal-in-bootstrap/
+-->
+	  <div   tabindex="-1" id="myModal" class="modal" >
+	
+	<div class="modal-overlay"></div>
+	<div class="modal--modal-content" >
+	  <h1>report details component</h1>
+		<h2 [innerHTML]="modalTitle"></h2>
+		<div [innerHTML]="modalText"></div>
+		<a class="modal--close-btn" (click)="closeModal()">X</a>
+
+ <ui-table [dynamicTabulatorId]= "idProp2"  (deletedRowRowChanged)="deletedRows($event)" (rowSelected)="rowSelection($event)" [tableData]="tableData" [columnNames]=(columnNames) ></ui-table>
+ <textarea  [(ngModel)]="justification" rows="4" cols="50">
+
+</textarea>
+
+		 <button (click)="saveProduct()" type="submit" class="btn btn-primary w-100">Save</button>
+	 <button (click)="cancel()" type="submit" class="btn btn-primary w-100">Cancel</button>
+	
+	</div>
+	
+</div>

@@ -1,0 +1,14 @@
+<div id="heroListContent">
+  <div class="row">
+    <div class="col-sm-6">
+      <h1>{{ 'heroes.list-title' | translate }}</h1>
+    </div>
+    <div class="col-sm-6 align-bottom">
+      <button class="btn btn-primary pull-right" routerLink="/reports/create">{{'heroes.create'| translate}}</button>
+    </div>
+	 <div class="col-sm-6 align-bottom">
+      <button class="btn btn-primary pull-right" id="fillForm"  (click)="fillForm()">{{'report.fillform'| translate}}</button>
+    </div>
+  </div>
+ 
+ <ui-table [dynamicTabulatorId]= "idProp" (cellClicked)="cellClicked($event)" (rowSelected)="rowSelection($event)" [tableData]="rowDataSub | async" [columnNames]=(columnNames) ></ui-table>
