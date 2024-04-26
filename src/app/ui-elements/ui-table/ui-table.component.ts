@@ -1,4 +1,4 @@
-import { Component, EventEmitter,Input,Output, OnChanges, OnInit ,SimpleChanges,OnDestroy,AfterViewInit } from '@angular/core';
+import { Component, EventEmitter,Input,Output, OnChanges,DoCheck, OnInit ,SimpleChanges,OnDestroy,AfterViewInit,ChangeDetectionStrategy,ChangeDetectorRef } from '@angular/core';
 import { default as Tabulator,EditModule
  } from 'tabulator-tables';
 import { ColumnDefinitionSorterParams, ColumnDefinition, LabelValue, Options, CellComponent, RowComponent, ColumnComponent, ListEditorParams } from 'tabulator-tables';
@@ -55,8 +55,11 @@ import {RprtDtlsComponent} from '../../rprts/shared/rprt-dtls.component';
 //https://github.com/knackstedt/dotglitch-ngx/blob/f4cb8aee2ec4f8f4ee81d92bf73b84ed869ee2d3/packages/common/src/components/dynamic-html/dynamic-html.service.ts#L65
 //https://github.com/acceleratedscience/open-ad-toolkit/blob/5f93ae8e462693ed6d068943385c282aacfd8b46/openad/flask_apps/dataviewer/js/table.js#L568
 //https://github.com/fusion-tech-org/fusion-ui/blob/9d32b44c60f4fc394f009fd133ad6d9482697969/packages/fusion-tabulator/src/tabulator/interface.ts#L17
-
-
+//https://github.com/LVerhulst4321/PlanZ/blob/7cd457fcbf5874783c539feeedd772a98b5b8427/webpages/js/EditConfigTables.js#L320
+/*
+//https://github.com/olifolkerd/tabulator/issues/3743
+The dataChanged event is intended for when an individual row has been updated, it is not called when events globally replace data, such as the setData and clearData functions, in these cases you should be looking for the dataProcessed events
+*/
 interface RowInfo {
     row: Tabulator.RowComponent,
     pos: number,
@@ -73,7 +76,7 @@ interface RowInfo {
   templateUrl: './ui-table.component.html',
   styleUrls: ['./ui-table.component.scss']
 })
-export class UITabulatorTableComponent implements OnInit ,OnChanges,OnDestroy,AfterViewInit {
+export class UITabulatorTableComponent implements OnInit ,DoCheck,OnChanges,OnDestroy,AfterViewInit {
   @Input() tableData: any[] = [];
   contents: any[] = [];
   deletedRows : any[] = [];
@@ -89,46 +92,55 @@ export class UITabulatorTableComponent implements OnInit ,OnChanges,OnDestroy,Af
 	//@Output() public cellClicked : EventEmitter<any> = new EventEmitter<any>();
 	@Output() public rowSelected : EventEmitter<any> = new EventEmitter<any>();
 	@Output() public deletedRowRowChanged : EventEmitter<any> = new EventEmitter<any>();
-	constructor(private mds: RprtDtlsPopupService,private modalService: NgbModal) {
+	constructor(private mds: RprtDtlsPopupService,private modalService: NgbModal,
+	private cd: ChangeDetectorRef) {
+	// this.cd.detectChanges();
 	}
-  ngOnInit() {
-    //this.showModalParent = false;
-	console.log("ui-table on init");
-	// this.table.redraw(false);
-	
-  }
-  ngOnChanges(changes: SimpleChanges): void {
-  console.log("ui-table on changes");
-  
-    //this.drawTable();
-	  //this.drawTable();
-	    console.log("ui-table drawtable");
-		  this.contents = [...this.tableData];
-    this.table = new Tabulator(this.tab, {
-      data: this.contents,
-     // reactiveData:true, //enable data reactivity
-      columns: this.columnNames,
-      layout: 'fitData',
-	  selectable: true,
-      height: '330px',
-	 
-	 //cellClick : this.binded.cellClick,
-	 //https://github.com/davidthegardens/AutoReg-NeuralNet
-	      // cellEdited: (cell: any) => this.cellEdited(cell),
-		cellClick : ( event: UIEvent, cell: CellComponent) => this.cellClicked(event, cell),
-		dataChanged : this.checkMe,
-		replaceData :(data : any) => this.checkMe2(data),
-	   rowSelectionChanged: this.binded.rowSelectionChanged,
-	  //rowDblClick: this.binded.rowDblClick,
-    });
-	 // this.table.value.on('cellClick', this._onCellClick.bind(this));
-	// this.table.onCellClick(e, cell)
-  }
+	ngOnInit() {
+		console.log("ui-table on init");
+		// this.cd.detectChanges();
+	}
+	ngOnChanges(changes: SimpleChanges): void {
+		console.log("ui-table ==on changes===");
+		this.contents = [...this.tableData];
+		if(this.table){
+			console.log("ngOnChanges","table is not null");
+			this.table.replaceData(this.contents);
+		}else{   
+			console.log("ngOnChanges","table is null");
+			this.table = new Tabulator(this.tab, {
+				data: this.contents,
+				// reactiveData:true, //enable data reactivity
+				columns: this.columnNames,
+				layout: 'fitData',
+				selectable: true,
+				height: '330px',
+				dataLoading: (data) =>{
+					console.log("ngOnChanges","data loading");
+					//this.cd.detectChanges();
+				},
+				dataLoaded: (data) =>{
+					console.log("ngOnChanges","data loaded");	
+				},
+				//cellClick : this.binded.cellClick,
+				//https://github.com/davidthegardens/AutoReg-NeuralNet
+				// cellEdited: (cell: any) => this.cellEdited(cell),
+				cellClick : ( event: UIEvent, cell: CellComponent) => this.cellClicked(event, cell),
+
+				dataChanged:  (data) => {
+					console.log("ngOnChanges","data changed");
+				},
+		
+				rowSelectionChanged: this.binded.rowSelectionChanged,
+				//rowDblClick: this.binded.rowDblClick,
+			});
+		}		
+	}
 	cellEdited(cell: any): void {
 		console.log("cell edited");
 	}
-	checkMe(){
-		console.log("ffffffffffffffffffffffffffffff");
+	checkMe(data: any){
+		console.log("check me called");
 	}
 	checkMe2(data:any){
 		console.log("ffffffffffffffffffffffffffffff");
@@ -175,6 +187,7 @@ export class UITabulatorTableComponent implements OnInit ,OnChanges,OnDestroy,Af
 	ngAfterViewInit(){
 		
 		this.drawTable();
+		 this.cd.detectChanges();
 	}
     private _onCellClick(evt: UIEvent, cell: CellComponent): void {
 	}
@@ -186,10 +199,17 @@ export class UITabulatorTableComponent implements OnInit ,OnChanges,OnDestroy,Af
   }
 	private drawTable(): void {
 		console.log("draw  table");
+		 this.cd.detectChanges();
 		document.getElementById(this.dynamicTabulatorId).appendChild(this.tab);
 		this.table.redraw(true);
 	}
- 
+ public countChange($event){
+ console.log("count_change_called");
+ }
+   ngDoCheck() {
+  
+    
+  }
   private rowDblClick(e: MouseEvent, row: any) {
 	
 	 this.modalRef = this.modalService.open(RprtDtlsComponent,{windowClass: 'changePasswordOverlay'});
@@ -257,6 +277,8 @@ https://github.com/whitedigital-eu/frontend-shared/blob/d135f8c6bf212259f20ca452
    let configuration = this.getConfiguration()
 
     this.tabulator = new Tabulator(container, configuration)
+	export interface Perspective extends Perspective.Attrs { }
+	"extends Renderer"
 https://github.com/davidthegardens/AutoReg-NeuralNet/blob/6097213e1e56d85d5fc8d574077d7e6f95763f76/venv/Lib/site-packages/panel/models/tabulator.ts#L173
 
 */

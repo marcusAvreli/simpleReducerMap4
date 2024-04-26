@@ -27,7 +27,7 @@ import {AppState} from '../../app.state';
 })
 export class RprtCreateComponent extends UIFormComponent {
   @Input() mode: Mode = Mode.CREATE;
-  rprt: Rprt = new Rprt(-1, null,null,null,0,null);
+  rprt: Rprt = new Rprt(-1, null,null,null,0,null,-1);
   //editorials: Editorial[] = [];
 
   constructor(

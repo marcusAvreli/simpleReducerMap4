@@ -6,6 +6,7 @@ export class Rprt {
 		,public description: string
 		,public disabled : number
 		,public justification : string
+		,public crtd_date: number
 	) 
 	{}
 }

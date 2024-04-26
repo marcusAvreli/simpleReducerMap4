@@ -13,7 +13,7 @@ import {StoreModule, ActionReducerMap} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
 import {RprtsEffects} from './store/rprts.effects';
 import * as rprtsReducer from './store/rprts.reducers';
-
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 export const reducers: ActionReducerMap<any> = {
   rprts: rprtsReducer.reducer
 };
@@ -24,6 +24,11 @@ export const reducers: ActionReducerMap<any> = {
     RprtsRoutingModule,
    StoreModule.forRoot(reducers),
     EffectsModule.forRoot([RprtsEffects])
+	, StoreDevtoolsModule.instrument(
+	  {name: 'TodoMVC app using Angular & NgRx',
+          maxAge: 50,
+	 }
+	 )
   ],
    entryComponents: [
    RprtDtlsComponent ,UITabulatorTableComponent

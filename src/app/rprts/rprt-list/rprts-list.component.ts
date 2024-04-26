@@ -1,4 +1,4 @@
-import {Component, OnInit, Inject, ChangeDetectionStrategy,AfterViewInit,OnDestroy} from '@angular/core';
+import {Component, OnInit, Inject,Output, ChangeDetectionStrategy,AfterViewInit,OnDestroy,EventEmitter} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import {Subscription} from 'rxjs/Subscription';
@@ -6,6 +6,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
+import * as moment from 'moment';
 // models
 import {Rprt} from '../shared/rprt';
 /*
@@ -57,7 +58,8 @@ export class RprtsListComponent implements OnInit,AfterViewInit,OnDestroy {
 	private rowDataSub = new BehaviorSubject<any[]>(undefined);
 	private subscription= new Subscription();
 	idProp :string;
-	
+	@Output()
+	change: EventEmitter<any> = new EventEmitter<any>();
 	 //modalRef;
 	constructor(/*@Inject('LoggerService') private loggerService: LoggerService,
 			  private authHelper: AuthHelper,
@@ -76,6 +78,7 @@ export class RprtsListComponent implements OnInit,AfterViewInit,OnDestroy {
 	}
 	onSuccess(data){
 		this.datum=data;
+		console.log("result datum:"+JSON.stringify(data));
 		this.columnNames = [
 		{formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
 			cellClick:(e, cell) => { this.selectEntry(e, cell)}}
@@ -85,6 +88,15 @@ export class RprtsListComponent implements OnInit,AfterViewInit,OnDestroy {
 			,{title: "description",field:"description"}
 			/*,{title: "disabled",field:"disabled"}	*/
 			,{title: "Justification",field:"justification"}	
+			,{title: "Created_date",field:"crtd_Date",
+			
+				formatter: function (cell) {						
+					const formattedDate = moment(cell.getValue()).format('yyyy-MM-DD HH:mm:ss');						
+					console.log(formattedDate)                           
+					return formattedDate;
+				},
+			
+			}	
 			,{title: "delete",
 				field: "delete",
 				
@@ -149,6 +161,7 @@ let mergedSubjects = this.datum.map(subject => {
     return { ...subject, ...otherSubject }
 })
 		this.datum = mergedSubjects;		
+		// this.change.emit(this.datum);
 		this.rowDataSub.next(this.datum);		
 		})
 		);

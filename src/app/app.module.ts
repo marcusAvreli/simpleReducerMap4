@@ -9,6 +9,8 @@ import {CoreModule} from './core/core.module';
 import {AppRoutingModule} from './app-routing.module';
 import { AppComponent } from './app.component';
 import {environment} from '../environments/environment';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+
 // modules
 import {VillainsModule} from './villains/villains.module'
 import  {VillainsComponent} from './villains/villains.component'
@@ -29,6 +31,11 @@ import  {VillainsComponent} from './villains/villains.component'
         deps: [HttpClient]
       }
     }),
+	 StoreDevtoolsModule.instrument(
+	  {name: 'TodoMVC app using Angular & NgRx',
+          maxAge: 50,
+	 }
+	 ),
 	
   ],
   providers: [
